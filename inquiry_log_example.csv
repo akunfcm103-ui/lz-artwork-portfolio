@@ -1,2 +1,0 @@
-inquiry_id,date_received,client_name,contact,commission_type,character_count,brief_summary,deadline_requested,usage,status,quote_amount,quote_date,approval_date,dp_amount,dp_received_date,dp_method,final_amount,payment_received_date,payment_method,delivery_date,notes
-INQ-20260927-001,2026-09-27,Example Client,example@test.invalid,Headshot,1,Fantasy character OC portrait with warm color scheme,,Personal,INQUIRY_RECEIVED,,,,,,,,,,"Waiting for owner review and quotation"
