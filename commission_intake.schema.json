@@ -1,0 +1,711 @@
+{
+  "$schema": "https://json-schema.org/draft-07/schema#",
+  "$id": "https://lz-artwork.local/schemas/commission_intake.schema.json",
+  "title": "LZ-ArtWork Commission Intake Form Schema",
+  "description": "JSON Schema for commission intake form validation. Priced quotes require owner approval. Never invent prices.",
+  "type": "object",
+  "required": [
+    "client",
+    "commission",
+    "output",
+    "intendedUse",
+    "timeline",
+    "agreement"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "formVersion": {
+      "type": "string",
+      "pattern": "^\\d+\\.\\d+\\.\\d+$",
+      "default": "1.0.0"
+    },
+    "submissionDate": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "client": {
+      "type": "object",
+      "required": ["name", "contact"],
+      "additionalProperties": false,
+      "properties": {
+        "name": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 200,
+          "description": "Client full name"
+        },
+        "contact": {
+          "type": "object",
+          "required": ["email"],
+          "additionalProperties": false,
+          "properties": {
+            "email": {
+              "type": "string",
+              "format": "email",
+              "description": "Client email address"
+            },
+            "platform": {
+              "type": "string",
+              "enum": ["email", "instagram", "twitter", "discord", "other"]
+            },
+            "username": {
+              "type": "string",
+              "maxLength": 100
+            },
+            "preferredMethod": {
+              "type": "string",
+              "maxLength": 100
+            }
+          }
+        }
+      }
+    },
+    "commission": {
+      "type": "object",
+      "required": ["type", "subject", "characterCount"],
+      "additionalProperties": false,
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": [
+            "character_portrait",
+            "full_body_illustration",
+            "character_sheet",
+            "scene_environment",
+            "chibi_sd",
+            "emote_sticker_set",
+            "other"
+          ],
+          "description": "Type of commission"
+        },
+        "typeOther": {
+          "type": "string",
+          "maxLength": 200,
+          "description": "Specify if type is 'other'"
+        },
+        "subject": {
+          "type": "string",
+          "minLength": 10,
+          "maxLength": 5000,
+          "description": "Description of commission subject"
+        },
+        "characterCount": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 20,
+          "default": 1,
+          "description": "Number of main characters in commission"
+        },
+        "references": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "characterRef": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "format": "uri"
+              },
+              "description": "Character reference links"
+            },
+            "poseRef": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "format": "uri"
+              },
+              "description": "Pose reference links"
+            },
+            "styleRef": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "format": "uri"
+              },
+              "description": "Style reference links"
+            },
+            "moodboard": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "format": "uri"
+              },
+              "description": "Moodboard links"
+            },
+            "other": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "format": "uri"
+              },
+              "description": "Other reference links"
+            }
+          }
+        }
+      }
+    },
+    "output": {
+      "type": "object",
+      "required": ["dimensions", "resolution", "fileFormat"],
+      "additionalProperties": false,
+      "properties": {
+        "dimensions": {
+          "type": "object",
+          "required": ["type"],
+          "additionalProperties": false,
+          "properties": {
+            "type": {
+              "type": "string",
+              "enum": ["portrait", "landscape", "square", "custom"]
+            },
+            "width": {
+              "type": "integer",
+              "minimum": 100,
+              "maximum": 10000,
+              "description": "Width in pixels (required if type is 'custom')"
+            },
+            "height": {
+              "type": "integer",
+              "minimum": 100,
+              "maximum": 10000,
+              "description": "Height in pixels (required if type is 'custom')"
+            }
+          }
+        },
+        "resolution": {
+          "type": "object",
+          "required": ["type"],
+          "additionalProperties": false,
+          "properties": {
+            "type": {
+              "type": "string",
+              "enum": ["web_72dpi", "print_300dpi", "high_res_custom"]
+            },
+            "customDPI": {
+              "type": "integer",
+              "minimum": 72,
+              "maximum": 600,
+              "description": "Custom DPI value"
+            }
+          }
+        },
+        "fileFormat": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enum": ["png", "jpg", "psd", "other"]
+          },
+          "minItems": 1,
+          "description": "Requested file formats"
+        },
+        "fileFormatOther": {
+          "type": "string",
+          "maxLength": 50,
+          "description": "Specify if file format includes 'other'"
+        }
+      }
+    },
+    "intendedUse": {
+      "type": "object",
+      "required": ["primaryUse", "usageDetail"],
+      "additionalProperties": false,
+      "properties": {
+        "primaryUse": {
+          "type": "string",
+          "enum": [
+            "personal",
+            "commercial",
+            "streaming_assets",
+            "social_media",
+            "print_merchandise",
+            "game_app_asset",
+            "other"
+          ],
+          "description": "Primary intended use of the artwork"
+        },
+        "primaryUseOther": {
+          "type": "string",
+          "maxLength": 200,
+          "description": "Specify if primaryUse is 'other'"
+        },
+        "usageDetail": {
+          "type": "string",
+          "minLength": 10,
+          "maxLength": 2000,
+          "description": "Detailed description of intended usage"
+        },
+        "commercialLicenseRequired": {
+          "type": "boolean",
+          "default": false
+        }
+      }
+    },
+    "timeline": {
+      "type": "object",
+      "required": ["deadline", "deadlineType"],
+      "additionalProperties": false,
+      "properties": {
+        "deadline": {
+          "type": "string",
+          "format": "date",
+          "description": "Target deadline date"
+        },
+        "deadlineType": {
+          "type": "string",
+          "enum": ["flexible", "preferred", "hard"],
+          "description": "Type of deadline constraint"
+        },
+        "deadlineNotes": {
+          "type": "string",
+          "maxLength": 1000,
+          "description": "Additional notes about deadline"
+        }
+      }
+    },
+    "budget": {
+      "type": "object",
+      "description": "Budget information - OPTIONAL. Never invent prices. Quote uses PRICING_RULE_REQUIRED if rule not available.",
+      "additionalProperties": false,
+      "properties": {
+        "range": {
+          "type": "string",
+          "enum": [
+            "under_50",
+            "50_100",
+            "100_200",
+            "200_500",
+            "500_plus",
+            "flexible",
+            "to_be_quoted"
+          ],
+          "description": "Budget range indicator - NOT a price quote"
+        },
+        "notes": {
+          "type": "string",
+          "maxLength": 500,
+          "description": "Budget notes or payment preferences"
+        }
+      }
+    },
+    "specialRequests": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "addons": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "additionalCharacters": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 10,
+              "default": 0
+            },
+            "complexBackground": {
+              "type": "boolean",
+              "default": false
+            },
+            "rushDelivery": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "requested": {
+                  "type": "boolean",
+                  "default": false
+                },
+                "days": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 30
+                }
+              }
+            },
+            "commercialLicense": {
+              "type": "boolean",
+              "default": false
+            },
+            "sourceFile": {
+              "type": "boolean",
+              "default": false
+            },
+            "multipleVariations": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 10,
+              "default": 0
+            },
+            "other": {
+              "type": "string",
+              "maxLength": 200
+            }
+          }
+        },
+        "specialInstructions": {
+          "type": "string",
+          "maxLength": 2000,
+          "description": "Special instructions or additional requests"
+        },
+        "contentWarnings": {
+          "type": "string",
+          "maxLength": 1000,
+          "description": "Content warnings or restrictions"
+        }
+      }
+    },
+    "agreement": {
+      "type": "object",
+      "required": ["termsAccepted", "pricingUnderstanding", "approvalProcess", "productionProcess", "revisionPolicy", "contentPolicy", "signature"],
+      "additionalProperties": false,
+      "properties": {
+        "termsAccepted": {
+          "type": "boolean",
+          "const": true,
+          "description": "Client has read and agreed to Terms of Service"
+        },
+        "pricingUnderstanding": {
+          "type": "boolean",
+          "const": true,
+          "description": "Client understands final price will be quoted per pricing rules"
+        },
+        "approvalProcess": {
+          "type": "boolean",
+          "const": true,
+          "description": "Client understands commission acceptance, pricing, and terms require owner approval"
+        },
+        "productionProcess": {
+          "type": "boolean",
+          "const": true,
+          "description": "Client agrees to production process: sketch → progress → revision → final approval → delivery"
+        },
+        "revisionPolicy": {
+          "type": "boolean",
+          "const": true,
+          "description": "Client understands revision limits set in agreement"
+        },
+        "contentPolicy": {
+          "type": "boolean",
+          "const": true,
+          "description": "Client guarantees content does not violate laws or platform policies"
+        },
+        "signature": {
+          "type": "object",
+          "required": ["clientName", "date"],
+          "additionalProperties": false,
+          "properties": {
+            "clientName": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 200
+            },
+            "date": {
+              "type": "string",
+              "format": "date"
+            }
+          }
+        }
+      }
+    },
+    "workflowStatus": {
+      "type": "object",
+      "description": "Internal use only - Workflow tracking",
+      "additionalProperties": false,
+      "properties": {
+        "inquiryReceived": {
+          "type": "object",
+          "$ref": "#/definitions/statusEntry"
+        },
+        "qualification": {
+          "type": "object",
+          "$ref": "#/definitions/statusEntryWithReview"
+        },
+        "quotePrepared": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "status": {
+              "type": "string",
+              "enum": ["pending", "done"]
+            },
+            "date": {
+              "type": "string",
+              "format": "date"
+            },
+            "quoteId": {
+              "type": "string",
+              "pattern": "^Q-\\d{4}-\\d{3}$"
+            },
+            "notes": {
+              "type": "string"
+            }
+          }
+        },
+        "ownerApproval": {
+          "type": "object",
+          "$ref": "#/definitions/statusEntryWithApproval"
+        },
+        "paymentStatus": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "status": {
+              "type": "string",
+              "enum": ["pending", "received", "confirmed"]
+            },
+            "date": {
+              "type": "string",
+              "format": "date"
+            },
+            "notes": {
+              "type": "string"
+            }
+          }
+        },
+        "production": {
+          "type": "object",
+          "$ref": "#/definitions/statusEntryWithProgress"
+        },
+        "revision": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "status": {
+              "type": "string",
+              "enum": ["none", "in_progress", "done"]
+            },
+            "date": {
+              "type": "string",
+              "format": "date"
+            },
+            "count": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "notes": {
+              "type": "string"
+            }
+          }
+        },
+        "finalApproval": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "status": {
+              "type": "string",
+              "enum": ["pending", "client_approved", "owner_approved"]
+            },
+            "date": {
+              "type": "string",
+              "format": "date"
+            },
+            "notes": {
+              "type": "string"
+            }
+          }
+        },
+        "delivery": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "status": {
+              "type": "string",
+              "enum": ["pending", "done"]
+            },
+            "date": {
+              "type": "string",
+              "format": "date"
+            },
+            "deliveryId": {
+              "type": "string",
+              "pattern": "^D-\\d{4}-\\d{3}$"
+            }
+          }
+        },
+        "feedback": {
+          "type": "object",
+          "$ref": "#/definitions/statusEntry"
+        }
+      }
+    },
+    "approvalGates": {
+      "type": "object",
+      "description": "Internal use only - All approvals require owner confirmation",
+      "additionalProperties": false,
+      "properties": {
+        "gate1_qualification": {
+          "type": "object",
+          "$ref": "#/definitions/approvalGate"
+        },
+        "gate2_quoteTerms": {
+          "type": "object",
+          "$ref": "#/definitions/approvalGate"
+        },
+        "gate3_production": {
+          "type": "object",
+          "$ref": "#/definitions/approvalGate"
+        },
+        "gate4_finalDelivery": {
+          "type": "object",
+          "$ref": "#/definitions/approvalGate"
+        }
+      }
+    },
+    "internalNotes": {
+      "type": "object",
+      "description": "Internal use only",
+      "additionalProperties": false,
+      "properties": {
+        "qualificationNotes": {
+          "type": "string",
+          "maxLength": 5000
+        },
+        "productionNotes": {
+          "type": "string",
+          "maxLength": 5000
+        },
+        "revisionLog": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "date": {
+                "type": "string",
+                "format": "date"
+              },
+              "request": {
+                "type": "string",
+                "maxLength": 1000
+              },
+              "status": {
+                "type": "string",
+                "enum": ["pending", "completed", "rejected"]
+              }
+            }
+          }
+        },
+        "clientHistory": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "previousCommissions": {
+              "type": "boolean"
+            },
+            "commissionCount": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "notes": {
+              "type": "string",
+              "maxLength": 1000
+            }
+          }
+        }
+      }
+    }
+  },
+  "definitions": {
+    "statusEntry": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "status": {
+          "type": "string",
+          "enum": ["pending", "done"]
+        },
+        "date": {
+          "type": "string",
+          "format": "date"
+        },
+        "notes": {
+          "type": "string"
+        }
+      }
+    },
+    "statusEntryWithReview": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "status": {
+          "type": "string",
+          "enum": ["pending", "in_review", "passed", "rejected"]
+        },
+        "date": {
+          "type": "string",
+          "format": "date"
+        },
+        "notes": {
+          "type": "string"
+        }
+      }
+    },
+    "statusEntryWithApproval": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "status": {
+          "type": "string",
+          "enum": ["pending", "approved", "rejected"]
+        },
+        "date": {
+          "type": "string",
+          "format": "date"
+        },
+        "notes": {
+          "type": "string"
+        }
+      }
+    },
+    "statusEntryWithProgress": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "status": {
+          "type": "string",
+          "enum": ["not_started", "in_progress", "done"]
+        },
+        "date": {
+          "type": "string",
+          "format": "date"
+        },
+        "notes": {
+          "type": "string"
+        }
+      }
+    },
+    "approvalGate": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "checks": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "item": {
+                "type": "string"
+              },
+              "passed": {
+                "type": "boolean"
+              }
+            }
+          }
+        },
+        "ownerApprovalRequired": {
+          "type": "boolean",
+          "const": true
+        },
+        "ownerApproved": {
+          "type": "boolean"
+        },
+        "approvalDate": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "notes": {
+          "type": "string"
+        }
+      }
+    }
+  }
+}
